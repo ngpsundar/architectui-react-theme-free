@@ -1,3 +1,5 @@
-$pe-7s-font-path: "~pe7-icon/dist/fonts";
+// Set the font path (relative to node_modules)
+$pe-7s-font-path: "pe7-icon/dist/fonts";
 
-@import "~pe7-icon/dist/scss/pe-icon-7-stroke.scss";
+// Import the SCSS file
+@import "pe7-icon/dist/scss/pe-icon-7-stroke.scss";
