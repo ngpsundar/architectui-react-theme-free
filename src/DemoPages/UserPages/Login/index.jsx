@@ -1,132 +1,165 @@
-import React, { Fragment, Component } from "react";
-
+import React, { Fragment ,useState} from "react";
 import Slider from "react-slick";
-
+import { Col, Row, Button, Form, FormGroup, Label, Input } from "reactstrap"; 
 import bg1 from "../../../assets/utils/images/originals/city.jpg";
 import bg2 from "../../../assets/utils/images/originals/citydark.jpg";
 import bg3 from "../../../assets/utils/images/originals/citynights.jpg";
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { loginUser } from "../../../api/authService"; 
+import { useNavigate } from "react-router-dom";
+const Login = () => {
+   const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-import { Col, Row, Button, Form, FormGroup, Label, Input } from "reactstrap";
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      username: Yup.string()
+        .min(3, "Username must be at least 3 characters")
+        .required("Username is required"),
+      password: Yup.string()
+        .min(6, "Password must be at least 6 characters")
+        .required("Password is required"),
+    }),
+    onSubmit: async (values) => {
+      setError("");
+      setLoading(true);
+      try {
+        const userData = await loginUser(values.username, values.password);
+        localStorage.setItem("token", userData.token);
+        alert("Login successful!");
+        navigate("/dashboards/crm");
+      } catch (err) {
+        setError(err.message || "Login failed. Try again.");
+      } finally {
+        setLoading(false);
+      }
+    },
+  });
 
-export default class Login extends Component {
-  render() {
-    let settings = {
-      dots: true,
-      infinite: true,
-      speed: 500,
-      arrows: true,
-      slidesToShow: 1,
-      slidesToScroll: 1,
-      fade: true,
-      initialSlide: 0,
-      autoplay: true,
-      adaptiveHeight: true,
-    };
-    return (
-      <Fragment>
-        <div className="h-100">
-          <Row className="h-100 g-0">
-            <Col lg="4" className="d-none d-lg-block">
-              <div className="slider-light">
-                <Slider {...settings}>
-                  <div className="h-100 d-flex justify-content-center align-items-center bg-plum-plate">
-                    <div className="slide-img-bg"
-                      style={{
-                        backgroundImage: "url(" + bg1 + ")",
-                      }}/>
-                    <div className="slider-content">
-                      <h3>Perfect Balance</h3>
-                      <p>
-                        ArchitectUI is like a dream. Some think it's too good to
-                        be true! Extensive collection of unified React Boostrap
-                        Components and Elements.
-                      </p>
+  let settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    arrows: true,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    fade: true,
+    autoplay: true,
+    adaptiveHeight: true,
+  };
+
+  return (
+    <Fragment>
+      <div className="h-100">
+        <Row className="h-100 g-0">
+          {/* Left slider section */}
+          <Col lg="4" className="d-none d-lg-block">
+            <div className="slider-light">
+              <Slider {...settings}>
+                {[bg1, bg2, bg3].map((bg, i) => (
+                  <div key={i} className="h-100 d-flex justify-content-center align-items-center bg-premium-dark">
+                    <div className="slide-img-bg" style={{ backgroundImage: `url(${bg})` }} />
+                    <div className="slider-content text-white">
+                      <h3>Welcome</h3>
+                      <p>Reusable validation + clean code = 🔥</p>
                     </div>
                   </div>
-                  <div className="h-100 d-flex justify-content-center align-items-center bg-premium-dark">
-                    <div className="slide-img-bg"
-                      style={{
-                        backgroundImage: "url(" + bg3 + ")",
-                      }}/>
-                    <div className="slider-content">
-                      <h3>Scalable, Modular, Consistent</h3>
-                      <p>
-                        Easily exclude the components you don't require.
-                        Lightweight, consistent Bootstrap based styles across
-                        all elements and components
-                      </p>
+                ))}
+              </Slider>
+            </div>
+          </Col>
+
+          {/* Right login form */}
+          <Col lg="8" md="12" className="h-100 d-flex bg-white justify-content-center align-items-center">
+            <Col lg="9" md="10" sm="12" className="mx-auto app-login-box">
+              <div className="app-logo" />
+              <h4 className="mb-0">
+                <div>Welcome back,</div>
+                <span>Please sign in to your account.</span>
+              </h4>
+
+              <h6 className="mt-3">
+                No account?{" "}
+                <a href="/" onClick={(e) => e.preventDefault()} className="text-primary">
+                  Sign up now
+                </a>
+              </h6>
+
+              <Row className="divider" />
+
+              <div>
+                <Form onSubmit={formik.handleSubmit}>
+                  <Row>
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="username">User Name</Label>
+                        <Input
+                          type="text"
+                          name="username"
+                          id="username"
+                         onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.username}
+                          placeholder="Enter your username"
+                        />
+                        {formik.touched.username && formik.errors.username ? (
+            <div style={{ color: 'red' }}>{formik.errors.username}</div>
+          ) : null}
+                      </FormGroup>
+                    </Col>
+
+                    <Col md={6}>
+                      <FormGroup>
+                        <Label for="password">Password</Label>
+                        <Input
+                          type="password"
+                          name="password"
+                          id="password"
+                            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.password}
+                          placeholder="Enter your password"
+                        />
+                        {formik.touched.password && formik.errors.password ? (
+            <div style={{ color: 'red' }}>{formik.errors.password}</div>
+          ) : null}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+
+                  <FormGroup check>
+                    <Input type="checkbox" id="remember" />
+                    <Label for="remember" check>
+                      Keep me logged in
+                    </Label>
+                  </FormGroup>
+
+                  <Row className="divider" />
+
+                  <div className="d-flex align-items-center">
+                    <div className="ms-auto">
+                      <Button color="link" size="lg" onClick={() => alert("Recover flow")}>
+                        Recover Password
+                      </Button>{" "}
+                      <Button color="primary" size="lg" type="submit">
+                        Login
+                      </Button>
                     </div>
                   </div>
-                  <div className="h-100 d-flex justify-content-center align-items-center bg-sunny-morning">
-                    <div className="slide-img-bg opacity-6"
-                      style={{
-                        backgroundImage: "url(" + bg2 + ")",
-                      }}/>
-                    <div className="slider-content">
-                      <h3>Complex, but lightweight</h3>
-                      <p>
-                        We've included a lot of components that cover almost all
-                        use cases for any type of application.
-                      </p>
-                    </div>
-                  </div>
-                </Slider>
+                </Form>
               </div>
             </Col>
-            <Col lg="8" md="12" className="h-100 d-flex bg-white justify-content-center align-items-center">
-              <Col lg="9" md="10" sm="12" className="mx-auto app-login-box">
-                <div className="app-logo" />
-                <h4 className="mb-0">
-                  <div>Welcome back,</div>
-                  <span>Please sign in to your account.</span>
-                </h4>
-                <h6 className="mt-3">
-                  No account?{" "}
-                  <a href="https://colorlib.com/" onClick={(e) => e.preventDefault()} className="text-primary">
-                    Sign up now
-                  </a>
-                </h6>
-                <Row className="divider" />
-                <div>
-                  <Form>
-                    <Row>
-                      <Col md={6}>
-                        <FormGroup>
-                          <Label for="exampleEmail">Email</Label>
-                          <Input type="email" name="email" id="exampleEmail" placeholder="Email here..."/>
-                        </FormGroup>
-                      </Col>
-                      <Col md={6}>
-                        <FormGroup>
-                          <Label for="examplePassword">Password</Label>
-                          <Input type="password" name="password" id="examplePassword" placeholder="Password here..."/>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <FormGroup check>
-                      <Input type="checkbox" name="check" id="exampleCheck" />
-                      <Label for="exampleCheck" check>
-                        Keep me logged in
-                      </Label>
-                    </FormGroup>
-                    <Row className="divider" />
-                    <div className="d-flex align-items-center">
-                      <div className="ms-auto">
-                        <a href="https://colorlib.com/" onClick={(e) => e.preventDefault()} className="btn-lg btn btn-link" >
-                          Recover Password
-                        </a>{" "}
-                        <Button color="primary" size="lg">
-                          Login to Dashboard
-                        </Button>
-                      </div>
-                    </div>
-                  </Form>
-                </div>
-              </Col>
-            </Col>
-          </Row>
-        </div>
-      </Fragment>
-    );
-  }
-}
+          </Col>
+        </Row>
+      </div>
+    </Fragment>
+  );
+};
+
+export default Login;

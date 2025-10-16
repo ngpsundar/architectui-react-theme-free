@@ -153,7 +153,24 @@ const AppMain = () => {
                         <UserPages />
                     </Suspense>
                 } />
-
+  {/* UserPages */}
+                <Route path="/*" element={
+                    <Suspense fallback={
+                        <div className="loader-container">
+                            <div className="loader-container-inner">
+                                <div className="text-center">
+                                    <Loader type="ball-pulse"/>
+                                </div>
+                                <h6 className="mt-3">
+                                    Please wait while we load all the Applications examples
+                                    <small>Because this is a demonstration we load at once all the Applications examples. This wouldn't happen in a real live app!</small>
+                                </h6>
+                            </div>
+                        </div>
+                    }>
+                        <UserPages />
+                    </Suspense>
+                } />
                 {/* Applications */}
                 <Route path="/apps/*" element={
                     <Suspense fallback={
@@ -193,7 +210,7 @@ const AppMain = () => {
                 } />
 
                 {/* Default redirect */}
-                <Route path="/" element={<Navigate to="/dashboards/crm" replace />} />
+                <Route path="/" element={<Navigate to="/auth/login" replace />} />
             </Routes>
             <ToastContainer/>
         </Fragment>
