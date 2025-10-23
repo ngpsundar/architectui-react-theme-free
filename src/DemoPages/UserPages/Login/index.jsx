@@ -8,11 +8,12 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { loginUser } from "../../../api/authService"; 
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../Context/AuthContext";
 const Login = () => {
    const navigate = useNavigate();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+ const { login } = useAuth();
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -31,7 +32,7 @@ const Login = () => {
       setLoading(true);
       try {
         const userData = await loginUser(values.username, values.password);
-        localStorage.setItem("token", userData.token);
+         login(userData.token);
         alert("Login successful!");
         navigate("/dashboards/crm");
       } catch (err) {

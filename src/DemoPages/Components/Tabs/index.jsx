@@ -10,30 +10,34 @@ import { ScrollableInkTabBar } from '../../../utils/TabsWrapper';
 // Examples
 import TabsExample from "./Examples/Basic";
 import CardTabsExample from "./Examples/CardTabs";
+import { useAuth } from "../../../Context/AuthContext";
+const TabExample = () => {
+  const { user, onLogout } = useAuth();
 
-export default class TabExample extends React.Component {
-  render() {
-    return (
+  return (
       <Fragment>
         <TransitionGroup>
           <CSSTransition component="div" classNames="TabsAnimation" appear={true}
             timeout={1500} enter={false} exit={false}>
             <div>  
-              <PageTitle heading="Tabs"
-                subheading="Tabs are used to split content between multiple sections. Wide variety available."
-                icon="pe-7s-drawer icon-gradient bg-happy-itmeo"/>
+        <PageTitle
+              heading={`Welcome to ${user?.username || "Guest"}`}
+              icon="pe-7s-cash"
+            />
+                 <CardTabsExample />
               <Tabs defaultActiveKey="1" renderTabBar={() => <ScrollableInkTabBar />} renderTabContent={() => <TabContent />}>
-                <TabPane tab="Advanced" key="1">
-                  <CardTabsExample />
-                </TabPane>
+                {/* <TabPane tab="Advanced" key="1"> */}
+                 
+                {/* </TabPane>
                 <TabPane tab="Basic" key="2">
                   <TabsExample />
-                </TabPane>
+                </TabPane> */}
               </Tabs>
             </div>
           </CSSTransition>
         </TransitionGroup>
       </Fragment>
     );
-  }
-}
+};
+
+export default TabExample;

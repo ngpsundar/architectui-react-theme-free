@@ -14,26 +14,27 @@ import Loader from "react-loaders";
 import { ValidationProvider } from "./Context/ValidationContext";
 import AppMain from "./Layout/AppMain";
 const UserPages = lazy(() => import("./DemoPages/UserPages"));
-
+import { AuthProvider } from "./Context/AuthContext";
 const store = configureAppStore();
 const rootElement = document.getElementById("root");
 
 const renderApp = (Component) => (
-  <React.StrictMode>
-    <Provider store={store}>
-      <HashRouter
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true,
-        }}
-      >
-        {/* ✅ Wrap your entire app inside ValidationProvider */}
-        <ValidationProvider>
-          <Component />
-        </ValidationProvider>
-      </HashRouter>
-    </Provider>
-  </React.StrictMode>
+    <React.StrictMode>
+        <Provider store={store}>
+            <HashRouter
+                future={{
+                    v7_startTransition: true,
+                    v7_relativeSplatPath: true,
+                }}
+            >
+                {/* ✅ Wrap your entire app inside ValidationProvider */}
+                <ValidationProvider>
+                    <AuthProvider><Component /></AuthProvider>
+
+                </ValidationProvider>
+            </HashRouter>
+        </Provider>
+    </React.StrictMode>
 );
 
 const IndexMain = () => {
@@ -47,7 +48,7 @@ const IndexMain = () => {
                         <div className="loader-container">
                             <div className="loader-container-inner">
                                 <div className="text-center">
-                                    <Loader type="ball-pulse"/>
+                                    <Loader type="ball-pulse" />
                                 </div>
                                 <h6 className="mt-3">
                                     Please wait while we load all the Applications examples
@@ -60,13 +61,13 @@ const IndexMain = () => {
                     </Suspense>
                 } />
 
-                 {/* appmain */}
+                {/* appmain */}
                 <Route path="/*" element={
                     <Suspense fallback={
                         <div className="loader-container">
                             <div className="loader-container-inner">
                                 <div className="text-center">
-                                    <Loader type="ball-pulse"/>
+                                    <Loader type="ball-pulse" />
                                 </div>
                                 <h6 className="mt-3">
                                     Please wait while we load all the Applications examples
@@ -75,13 +76,13 @@ const IndexMain = () => {
                             </div>
                         </div>
                     }>
-                       <Main />
+                        <Main />
                     </Suspense>
                 } />
-                </Routes>
+            </Routes>
 
 
-                </Fragment>
+        </Fragment>
     )
 }
 

@@ -598,7 +598,7 @@ class ListGroupExampleAdvanced extends Component {
                               </div>
                               <div className="widget-content-left">
                                 <div className="widget-heading">
-                                  Alina Mcloughlin
+                                  Alina Mcloughlin1131
                                 </div>
                                 <div className="widget-subheading">
                                   A short profile description

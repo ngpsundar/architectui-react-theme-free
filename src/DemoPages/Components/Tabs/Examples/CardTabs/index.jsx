@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { CSSTransition, TransitionGroup  } from '../../../../../utils/TransitionWrapper';
 import classnames from "classnames";
+import AccordionsBasicExample from "../../../Accordion/Examples/calcaccor";
 
 import {
   TabContent,
@@ -69,12 +70,11 @@ export default class CardTabsExample extends React.Component {
             timeout={0} enter={false} exit={false}>
             <Container fluid>
               <Row>
-                <Col md="6">
+                <Col md="12">
                   <Card className="main-card mb-3">
                     <CardHeader>
-                      <i className="header-icon lnr-license icon-gradient bg-plum-plate"> {" "} </i>
-                      Header with Tabs
-                      <div className="btn-actions-pane-right">
+                       
+                      <div className="btn-actions-pane-left">
                         <ButtonGroup size="sm">
                           <Button color="primary"
                             className={
@@ -84,7 +84,7 @@ export default class CardTabsExample extends React.Component {
                             onClick={() => {
                               this.toggle("1");
                             }}>
-                            Tab 1
+                            Account
                           </Button>
                           <Button color="primary"
                             className={
@@ -94,7 +94,7 @@ export default class CardTabsExample extends React.Component {
                             onClick={() => {
                               this.toggle("2");
                             }}>
-                            Tab 2
+                           Fund Transfer
                           </Button>
                           <Button color="primary"
                             className={
@@ -104,8 +104,30 @@ export default class CardTabsExample extends React.Component {
                             onClick={() => {
                               this.toggle("3");
                             }}>
-                            Tab 3
+                           Loan
                           </Button>
+                              <Button color="primary"
+                            className={
+                              "btn-shadow " +
+                              classnames({ active: this.state.activeTab === "4" })
+                            }
+                            onClick={() => {
+                              this.toggle("4");
+                            }}>
+                           Notifications
+                          </Button>
+
+                            <Button color="primary"
+                            className={
+                              "btn-shadow " +
+                              classnames({ active: this.state.activeTab === "5" })
+                            }
+                            onClick={() => {
+                              this.toggle("5");
+                            }}>
+                           Calculators
+                          </Button>
+                          
                         </ButtonGroup>
                       </div>
                     </CardHeader>
@@ -137,15 +159,30 @@ export default class CardTabsExample extends React.Component {
                             typesetting, remaining essentially unchanged.{" "}
                           </p>
                         </TabPane>
+                         <TabPane tabId="4">
+                          <p>
+                            4 Lorem Ipsum has been the industry's standard dummy
+                            text ever since the 1500s, when an unknown printer
+                            took a galley of type and scrambled it to make a type
+                            specimen book. It has survived not only five
+                            centuries, but also the leap into electronic
+                            typesetting, remaining essentially unchanged.{" "}
+                          </p>
+                        </TabPane>
+                         <TabPane tabId="5">
+                             <AccordionsBasicExample />
+
+                            {/* <Button className="btn-wide" color="success">
+                        Save
+                      </Button>  */}
+                        </TabPane>
                       </TabContent>
                     </CardBody>
                     <CardFooter className="d-block text-end">
-                      <Button className="btn-wide" color="success">
-                        Save
-                      </Button>
+                      
                     </CardFooter>
                   </Card>
-                  <Card className="main-card mb-3">
+                  {/* <Card className="main-card mb-3">
                     <CardHeader>
                       <i className="header-icon lnr-license icon-gradient bg-plum-plate"> {" "} </i>
                       Header Tabs Buttons
@@ -364,9 +401,9 @@ export default class CardTabsExample extends React.Component {
                         Save
                       </Button>
                     </CardFooter>
-                  </Card>
+                  </Card> */}
                 </Col>
-                <Col md="6">
+                {/* <Col md="6">
                   <Card className="mb-3">
                     <CardHeader className="card-header-tab">
                       <div className="card-header-title">
@@ -671,9 +708,9 @@ export default class CardTabsExample extends React.Component {
                       </Button>
                     </CardFooter>
                   </Card>
-                </Col>
+                </Col> */}
               </Row>
-              <AnimatedLinesTabsExample />
+              {/* <AnimatedLinesTabsExample /> */}
             </Container>
           </CSSTransition>
         </TransitionGroup>

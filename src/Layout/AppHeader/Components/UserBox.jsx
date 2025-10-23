@@ -28,7 +28,21 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import city3 from "../../../assets/utils/images/dropdown-header/city3.jpg";
 import avatar1 from "../../../assets/utils/images/avatars/1.jpg";
+import { useAuth } from "../../../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
+const UserBoxWithAuth = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
+  const handleLogout = () => {
+    logout(); // clear token & user
+    toast.info("You have been logged out.", { autoClose: 2000 });
+   navigate("/auth/login", { replace: true });
+
+  };
+
+  return <UserBox user={user} onLogout={handleLogout} />;
+};
 class UserBox extends React.Component {
   constructor(props) {
     super(props);
@@ -36,7 +50,7 @@ class UserBox extends React.Component {
       active: false,
     };
   }
-
+debugger;
   notify2 = () =>
     (this.toastId = toast(
       "You don't have any new items in your calendar for today! Go out and play!",
@@ -50,6 +64,7 @@ class UserBox extends React.Component {
     ));
 
   render() {
+     const { user, onLogout } = this.props;
     return (
       <Fragment>
         <div className="header-btn-lg pe-0">
@@ -79,14 +94,14 @@ class UserBox extends React.Component {
                               </div>
                               <div className="widget-content-left">
                                 <div className="widget-heading">
-                                  Alina Mcloughlin
+                                 {user?.username || "Guest"}
                                 </div>
                                 <div className="widget-subheading opacity-8">
-                                  A short profile description
+                                 {user?.role || "User Role"}
                                 </div>
                               </div>
                               <div className="widget-content-right me-2">
-                                <Button className="btn-pill btn-shadow btn-shine" color="focus">
+                                <Button className="btn-pill btn-shadow btn-shine" color="focus" onClick={onLogout}>
                                   Logout
                                 </Button>
                               </div>
@@ -173,8 +188,8 @@ class UserBox extends React.Component {
                 </UncontrolledButtonDropdown>
               </div>
               <div className="widget-content-left  ms-3 header-user-info">
-                <div className="widget-heading">Alina Mclourd</div>
-                <div className="widget-subheading">VP People Manager</div>
+                <div className="widget-heading">{user?.username || "Guest"}</div>
+                <div className="widget-subheading">{user?.role || "User Role"}</div>
               </div>
               <div className="widget-content-right header-user-info ms-3">
                 <Button className="btn-shadow p-1" size="sm" onClick={this.notify2} color="info" id="Tooltip-1">
@@ -192,4 +207,4 @@ class UserBox extends React.Component {
   }
 }
 
-export default UserBox;
+export default UserBoxWithAuth;
