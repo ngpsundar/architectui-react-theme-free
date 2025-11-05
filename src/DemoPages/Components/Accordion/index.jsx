@@ -5,6 +5,7 @@ import PageTitle from "../../../Layout/AppMain/PageTitle";
 // Examples
 import AccordionsBasicExample from "./Examples/Basic";
 import Accordionscalc from "./Examples/Basic";
+import AccountAccordion from "./Examples/UserInfo";
 
 export default class AccordionExample extends React.Component {
   render() {
@@ -15,6 +16,7 @@ export default class AccordionExample extends React.Component {
           icon="pe-7s-diamond icon-gradient bg-warm-flame"/>
         {/* <AccordionsBasicExample /> */}
         <AccordionsWithCalculator />
+        <AccountAccordion />
       </Fragment>
     );
   }

@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-       // debugger;
+      //  debugger;
         setUser({
           username: decoded?.unique_name || decoded?.name,
           email: decoded?.email,

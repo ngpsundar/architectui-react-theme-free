@@ -2,7 +2,9 @@ import React, { Fragment } from "react";
 import { CSSTransition, TransitionGroup  } from '../../../../../utils/TransitionWrapper';
 import classnames from "classnames";
 import AccordionsBasicExample from "../../../Accordion/Examples/calcaccor";
-
+import Userinfoaccordion from "../../../Accordion/Examples/UserInfo"; 
+import TransactionForm from "../../../Accordion/Examples/TransactionForm";
+import NotificationBank from "../../../../Tables/DataTables/Examples/notificationbank";
 import {
   TabContent,
   TabPane,
@@ -63,6 +65,9 @@ export default class CardTabsExample extends React.Component {
     }));
 
   render() {
+        const { userId } = this.props; // ✅ access props in class component
+    console.log("userId in CardTabsExample:", userId); // check value
+  //  debugger;
     return (
       <Fragment>
         <TransitionGroup>
@@ -134,20 +139,10 @@ export default class CardTabsExample extends React.Component {
                     <CardBody>
                       <TabContent activeTab={this.state.activeTab}>
                         <TabPane tabId="1">
-                          <p>
-                            It was popularised in the 1960s with the release of
-                            Letraset sheets containing Lorem Ipsum passages, and
-                            more recently with desktop publishing software like
-                            Aldus PageMaker including versions of Lorem Ipsum.
-                          </p>
+                        <Userinfoaccordion userId={userId} />
                         </TabPane>
                         <TabPane tabId="2">
-                          <p>
-                            Like Aldus PageMaker including versions of Lorem. It
-                            has survived not only five centuries, but also the
-                            leap into electronic typesetting, remaining
-                            essentially unchanged.{" "}
-                          </p>
+                          <TransactionForm  userId={userId} />
                         </TabPane>
                         <TabPane tabId="3">
                           <p>
@@ -160,14 +155,9 @@ export default class CardTabsExample extends React.Component {
                           </p>
                         </TabPane>
                          <TabPane tabId="4">
-                          <p>
-                            4 Lorem Ipsum has been the industry's standard dummy
-                            text ever since the 1500s, when an unknown printer
-                            took a galley of type and scrambled it to make a type
-                            specimen book. It has survived not only five
-                            centuries, but also the leap into electronic
-                            typesetting, remaining essentially unchanged.{" "}
-                          </p>
+                            <div>
+                              <NotificationBank userId={userId} />
+                            </div>
                         </TabPane>
                          <TabPane tabId="5">
                              <AccordionsBasicExample />

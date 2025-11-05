@@ -17,7 +17,7 @@ const UserPages = lazy(() => import("./DemoPages/UserPages"));
 import { AuthProvider } from "./Context/AuthContext";
 const store = configureAppStore();
 const rootElement = document.getElementById("root");
-
+import { KycProvider } from "./Context/KycContext";
 const renderApp = (Component) => (
     <React.StrictMode>
         <Provider store={store}>
@@ -29,7 +29,9 @@ const renderApp = (Component) => (
             >
                 {/* ✅ Wrap your entire app inside ValidationProvider */}
                 <ValidationProvider>
-                    <AuthProvider><Component /></AuthProvider>
+                    <AuthProvider>
+                        <KycProvider> <Component /></KycProvider>
+                        </AuthProvider>
 
                 </ValidationProvider>
             </HashRouter>

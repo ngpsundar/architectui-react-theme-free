@@ -13,7 +13,7 @@ import CardTabsExample from "./Examples/CardTabs";
 import { useAuth } from "../../../Context/AuthContext";
 const TabExample = () => {
   const { user, onLogout } = useAuth();
-
+ const userId = user?.userId; 
   return (
       <Fragment>
         <TransitionGroup>
@@ -24,7 +24,7 @@ const TabExample = () => {
               heading={`Welcome to ${user?.username || "Guest"}`}
               icon="pe-7s-cash"
             />
-                 <CardTabsExample />
+                 <CardTabsExample userId={userId} />
               <Tabs defaultActiveKey="1" renderTabBar={() => <ScrollableInkTabBar />} renderTabContent={() => <TabContent />}>
                 {/* <TabPane tab="Advanced" key="1"> */}
                  
