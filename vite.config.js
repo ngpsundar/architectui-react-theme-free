@@ -15,7 +15,8 @@ export default defineConfig({
     alias: {
       "@": "/src",
       crypto: "crypto-browserify"
-    }
+    },
+    redupe: ["react", "react-dom"],
   },
   define: {
     global: {},

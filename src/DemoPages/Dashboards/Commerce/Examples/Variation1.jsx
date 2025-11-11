@@ -686,7 +686,7 @@ export default class CommerceDashboard1 extends Component {
                       <div>
                         <h5 className="menu-header-title">Jeff Walberg</h5>
                         <h6 className="menu-header-subtitle">
-                          Lead UX Developer
+                          Lead UX Developerxxxxx
                         </h6>
                       </div>
                       <div className="menu-header-btn-pane">

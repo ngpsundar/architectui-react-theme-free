@@ -12,6 +12,7 @@ export const KycProvider = ({ children }) => {
     { id: 4, type: "Aadhar Card", key: "aadharCard", status: "Pending" },
     { id: 5, type: "Mobile No", key: "mobile", status: "Pending" },
     { id: 6, type: "Email ID", key: "email", status: "Pending" },
+    { id: 7, type: "Video KYC", key: "videoKyc", status: "Pending" },
   ]);
 
   const updateStatus = (key, newStatus) => {

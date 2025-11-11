@@ -530,7 +530,7 @@ export default class SalesDashboard1 extends Component {
                         </div>
                         <div className="widget-chart-wrapper widget-chart-wrapper-lg opacity-10 m-0">
                           <ResponsiveContainer height="100%">
-                            {/* <AreaChart data={data55}
+                            <AreaChart data={data55}
                               margin={{
                                 top: -15,
                                 right: 0,
@@ -545,7 +545,7 @@ export default class SalesDashboard1 extends Component {
                               </defs>
                               <Area type="monotoneX" dataKey="uv" stroke="#545cd8"
                                 strokeWidth="3" fillOpacity={1} fill="url(#colorPv)"/>
-                            </AreaChart> */}
+                            </AreaChart>
                           </ResponsiveContainer>
                         </div>
                       </div>
@@ -994,7 +994,134 @@ export default class SalesDashboard1 extends Component {
                   </Card>
                 </Col>
               </Row>
-             
+              <Row>
+                <Col md="12" lg="6" xl="8">
+                  <Card className="mb-3">
+                    <CardHeader className="card-header-tab">
+                      <div className="card-header-title font-size-lg text-capitalize fw-normal">
+                        <i className="header-icon lnr-dice me-3 text-muted opacity-6"> {" "} </i>
+                        Easy Dynamic Tables
+                      </div>
+                      <div className="btn-actions-pane-right actions-icon-btn">
+                        <UncontrolledButtonDropdown>
+                          <DropdownToggle className="btn-icon btn-icon-only" color="link">
+                            <i className="pe-7s-menu btn-icon-wrapper" />
+                          </DropdownToggle>
+                          <DropdownMenu className="dropdown-menu-shadow dropdown-menu-hover-link">
+                            <DropdownItem header>Header</DropdownItem>
+                            <DropdownItem>
+                              <i className="dropdown-icon lnr-inbox"> </i>
+                              <span>Menus</span>
+                            </DropdownItem>
+                            <DropdownItem>
+                              <i className="dropdown-icon lnr-file-empty"> </i>
+                              <span>Settings</span>
+                            </DropdownItem>
+                            <DropdownItem>
+                              <i className="dropdown-icon lnr-book"> </i>
+                              <span>Actions</span>
+                            </DropdownItem>
+                            <DropdownItem divider />
+                            <div className="p-3 text-end">
+                              <Button className="me-2 btn-shadow btn-sm" color="link">
+                                View Details
+                              </Button>
+                              <Button className="me-2 btn-shadow btn-sm" color="primary">
+                                Action
+                              </Button>
+                            </div>
+                          </DropdownMenu>
+                        </UncontrolledButtonDropdown>
+                      </div>
+                    </CardHeader>
+                    <CardBody>
+                    <DataTable data={data}
+                          columns={columns}
+                          pagination
+                          fixedHeader
+                          fixedHeaderScrollHeight="370px"
+                        />
+                    </CardBody>
+                  </Card>
+                </Col>
+                <Col md="12" lg="6" xl="4">
+                  <Card className="mb-3">
+                    <CardHeader className="card-header-tab">
+                      <div className="card-header-title font-size-lg text-capitalize fw-normal">
+                        <i className="header-icon lnr-cloud-download icon-gradient bg-happy-itmeo"> {" "} </i>
+                        Technical Support
+                      </div>
+                    </CardHeader>
+                    <CardBody className="p-0">
+                      <TabbedContent />
+                    </CardBody>
+                  </Card>
+                </Col>
+              </Row>
+              <Card className="main-card mb-3">
+                <Row className="g-0s">
+                  <Col md="6" xl="4">
+                    <div className="widget-content">
+                      <div className="widget-content-wrapper">
+                        <div className="widget-content-right ms-0 me-3">
+                          <div className="widget-numbers text-success">1896</div>
+                        </div>
+                        <div className="widget-content-left">
+                          <div className="widget-heading">Total Orders</div>
+                          <div className="widget-subheading">
+                            Last year expenses
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Col>
+                  <Col md="6" xl="4">
+                    <div className="widget-content">
+                      <div className="widget-content-wrapper">
+                        <div className="widget-content-right ms-0 me-3">
+                          <div className="widget-numbers text-warning">$ 14M</div>
+                        </div>
+                        <div className="widget-content-left">
+                          <div className="widget-heading">Products Sold</div>
+                          <div className="widget-subheading">
+                            Total revenue streams
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Col>
+                  <Col md="6" xl="4">
+                    <div className="widget-content">
+                      <div className="widget-content-wrapper">
+                        <div className="widget-content-right ms-0 me-3">
+                          <div className="widget-numbers text-danger">45.9%</div>
+                        </div>
+                        <div className="widget-content-left">
+                          <div className="widget-heading">Followers</div>
+                          <div className="widget-subheading">
+                            People Interested
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Col>
+                  <Col md="6" xl="4" className="d-xl-none d-md-block">
+                    <div className="widget-content">
+                      <div className="widget-content-wrapper">
+                        <div className="widget-content-right ms-0 me-3">
+                          <div className="widget-numbers text-danger">45.9%</div>
+                        </div>
+                        <div className="widget-content-left">
+                          <div className="widget-heading">Followers</div>
+                          <div className="widget-subheading">
+                            People Interested
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
+              </Card>
             </div>
           </CSSTransition>
         </TransitionGroup>

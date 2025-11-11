@@ -8,19 +8,19 @@ import SalesDashboard1 from "./Examples/Variation1";
 
 const tabsContent = [
   {
-    title: "Account Overview",
+    title: "Sales Report",
     content: <SalesDashboard1 />,
   },
   {
-    title: "Loan Accounts",
+    title: "Account Activity",
     content: <SalesDashboard1 />,
   },
   {
-    title: "FD Status",
+    title: "Profile Status",
     content: <SalesDashboard1 />,
   },
   {
-    title: "New Messages",
+    title: "New Accounts",
     content: <SalesDashboard1 />,
   },
 ];

@@ -17,6 +17,9 @@ export const API_ENDPOINTS = {
     mobileUpdate: (id) => `${BASE_URL}account/api/v1/Account/mobile/${id}`,
     emailUpdate: (id) => `${BASE_URL}account/api/v1/Account/email/${id}`,
     kyclist: (id) => `${BASE_URL}account/api/v1/Account/userkyc/${id}`,
+    kycuploads: `${BASE_URL}account/api/v1/Account/uploadkyc`,
+    videokycuploads: `${BASE_URL}account/api/v1/Account/uploadkycchunk`,
+    videokycfinalise: `${BASE_URL}account/api/v1/Account/uploadkyc/finalize`,
   },
   TRANSACTIONS: {
     CREATE: `${BASE_URL}transaction/api/v1/Transactions/create`,
@@ -27,6 +30,11 @@ export const API_ENDPOINTS = {
     `${BASE_URL}reporting/api/v1/Notifications/GetNotifications/${userId}?pageNumber=${pageNumber}&pageSize=${pageSize}&sortBy=${sortBy}&sortDesc=${sortDesc}`,
     UPDATEO: `${BASE_URL}reporting/api/v1/Notifications/mark-read`,
     UPDATEM: `${BASE_URL}reporting/api/v1/Notifications/mark-many-read`,
+  },
+  DASHBOARD: {
+    OVERVIEW: `${BASE_URL}dashboard/api/v1/Overview`,
+    STATISTICS: `${BASE_URL}dashboard/api/v1/Statistics`,
+    getSummaryAdmin: `${BASE_URL}account/api/v1/account/dashboard/summary`,
   },
   // 🧩 Add more groups as your app grows
 };

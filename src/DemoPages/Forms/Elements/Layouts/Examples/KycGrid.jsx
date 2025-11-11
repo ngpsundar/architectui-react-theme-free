@@ -1,7 +1,7 @@
 import React, { Fragment, useState ,useEffect} from "react";
 import { useKyc } from "@/context/KycContext"; // ✅ access global KYC state
 import { CSSTransition, TransitionGroup } from "../../../../../utils/TransitionWrapper";
-import { updateMobile, updateEmail,userkycdetails } from "../../../../../api/UserService";
+import { updateMobile, updateEmail,userkycdetails,userKycUploads,userKycUploadsChunked } from "../../../../../api/UserService";
 import {
   Col,
   Card,
@@ -13,15 +13,14 @@ import {
   Input,
   Badge,
 } from "reactstrap";
-import axios from "axios";
-
+import { toast, Slide } from "react-toastify";
 const Formkycgrid = () => {
   const { kycStatus } = useKyc(); // remove updateStatus if not needed
   const [fileInputs, setFileInputs] = useState({});
   const [textInputs, setTextInputs] = useState({});
   const [statusMessage, setStatusMessage] = useState("");
   const [kycRows, setKycRows] = useState([]);
-  const userId = "68e3eb83f907b7ba39e40c84";
+  const userId = "68e3eb83f907b7ba39e40c84"; 
 
   // Handle text input changes
   const handleTextChange = (key, value) => {
@@ -68,24 +67,58 @@ const Formkycgrid = () => {
       } else if (item.key === "email") {
         await updateEmail(userId, textInputs[item.key]);
         setStatusMessage("✅ Email updated successfully!");
-      } else {
-        const formData = new FormData();
-        formData.append("file", fileInputs[item.key]);
-        formData.append("userId", userId);
-        formData.append("type", item.key);
+      } else if (item.key === "videokyc") {
+  const file = fileInputs[item.key];
+  if (!file) {
+    toast.error("Please select a video file");
+    return;
+  }
 
-        await axios.post(`https://localhost:5005/api/v1/Kyc/upload`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+  toast.info("Uploading video KYC in chunks... Please wait");
 
-        setStatusMessage(`✅ ${item.type} uploaded successfully!`);
-      }
+  const response = await userKycUploadsChunked(userId, item.key, file);
+
+  if (response.message === "File uploaded successfully") {
+    toast.success("Video KYC uploaded successfully!");
+    setKycRows((prev) =>
+      prev.map((k) => (k.key === item.key ? { ...k, status: "Completed" } : k))
+    );
+  } else {
+    toast.error("Failed to upload video KYC");
+  }
+} else {
+  const file = fileInputs[item.key];
+  if (!file) {
+    toast.error(`Please select a file for ${item.type}`);
+    return;
+  }
+ 
+
+    const response = await userKycUploads(userId, item.key, file);
+if (response.message === "File uploaded successfully") {
+   toast.success(`${item.type} uploaded and verified successfully`, {
+    transition: Slide,
+    position: "bottom-center",
+    autoClose: 5000,
+  });
+  setKycRows((prev) =>
+    prev.map((k) =>
+      k.key === item.key ? { ...k, status: "Completed" } : k
+    )
+  );
+} else {
+  toast.error(`Failed to upload ${item.type}`);
+}
+
+ 
+ }
 
       // Refresh KYC status after every update
       await refreshKycStatus();
     } catch (err) {
       console.error(err);
       setStatusMessage(`❌ ${item.type} action failed. Try again.`);
+      toast.error("File upload failed");
     }
   };
 
