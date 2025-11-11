@@ -35,6 +35,8 @@ export const API_ENDPOINTS = {
     OVERVIEW: `${BASE_URL}dashboard/api/v1/Overview`,
     STATISTICS: `${BASE_URL}dashboard/api/v1/Statistics`,
     getSummaryAdmin: `${BASE_URL}account/api/v1/account/dashboard/summary`,
+    gettransacttypes: `${BASE_URL}transaction/api/v1/Transactions/transaction-dashboard`,
+    getaccoundetailsbyID: (accountID) => `${BASE_URL}account/api/v1/Account/useraccountbyid/${accountID}`,
   },
   // 🧩 Add more groups as your app grows
 };

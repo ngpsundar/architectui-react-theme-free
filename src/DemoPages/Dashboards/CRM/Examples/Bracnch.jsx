@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import { CSSTransition, TransitionGroup  } from '../../../../utils/TransitionWrapper';
 import classnames from "classnames";
 import DataTable from 'react-data-table-component';
-
+import { getTransactionsdashboardsummary,getaccountdetailsbyID} from "../../../../api/DashboardService";
 import {
   Row,
   Col,
@@ -33,6 +33,12 @@ import {
   AreaChart,
   Area,
   Tooltip,
+   ComposedChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend, 
 } from "recharts";
 
 import PerfectScrollbar from "react-perfect-scrollbar";
@@ -152,9 +158,46 @@ export default class CRMDashboard2 extends Component {
     this.toggle2 = this.toggle2.bind(this);
     this.state = {
       activeTab2: "222",
-      activeTab1: "11",
-      data: makeData(),
+      activeTab1: "11", 
+      data: makeData(), 
     };
+  }
+  componentDidMount() {
+    this.fetchSummary();
+  }
+
+  // --- Transform data method ---
+  transformData(data) {
+    const result = {};
+
+    data.forEach((item) => {
+      const key = `${item.year}-${item.month.toString().padStart(2, "0")}`;
+      if (!result[key]) result[key] = { month: key };
+
+      result[key][`${item.transactionType}_amount`] = item.totalAmount;
+      result[key][`${item.transactionType}_count`] = item.count;
+    });
+
+    return Object.values(result);
+  }
+
+  async fetchSummary() {
+    try {
+      const datadx = await getTransactionsdashboardsummary();
+
+      const summaryData = datadx.summary || {};
+
+      const chartData = this.transformData(datadx.monthlyTrend || []);
+
+      this.setState({
+        summary: summaryData,
+        chartData: chartData,
+        loading: false,
+      });
+    } catch (err) {
+      console.error("Failed to fetch dashboard summary:", err);
+      this.setState({ loading: false });
+    }
   }
 
   toggle2(tab) {
@@ -174,276 +217,180 @@ export default class CRMDashboard2 extends Component {
   }
 
   render() {
+   const { summary, chartData, loading } = this.state;
+
+const colors = {
+  Fee: "#8884d8",
+  Debit: "#82ca9d",
+  Credit: "#ffc658",
+  Transfer: "#ff7300",
+};
+
     const { data } = this.state;
-
-    const columns = [
-      {
-        name: "First Name",
-        selector: row => row.firstName,
-        sortable: true,
-      },
-      {
-        name: "Last Name",
-        id: "lastName",
-        selector: row => row.lastName,
-        sortable: true,
-      },
-
-      {
-        name: "Age",
-        selector: row => row.age,
-        sortable: true,
-      },
-      {
-        name: "Status",
-        selector: row => row.status,
-        sortable: true,
-      },
-
-      {
-        name: "Visits",
-        selector: row => row.visits,
-        sortable: true,
-        },
-    ];
+  
     return (
       <Fragment>
         <TransitionGroup>
           <CSSTransition component="div" classNames="TabsAnimation"
             appear={true} timeout={0} enter={false} exit={false}>
             <div>
+            <Row>
+  {/* Total Transactions */}
+  <Col md="6" xl="4">
+    <div className="card mb-3 widget-content">
+      <div className="widget-content-outer">
+        <div className="widget-content-wrapper">
+          <div className="widget-content-left">
+            <div className="widget-heading">Total </div>
+          </div>
+          <div className="widget-content-right">
+            <div className="widget-numbers text-success">
+              {summary?.totalTransactions ?? 0}
+            </div>
+          </div>
+          
+        </div>
+        <div className="widget-progress-wrapper">
+                                  <Progress className="progress-bar-sm" color="primary" value="71"/>
+                                  <div className="progress-sub-label">
+                                    <div className="sub-label-left">YoY Growth</div>
+                                    <div className="sub-label-right">100%</div>
+                                  </div>
+                                </div>
+      </div>
+    </div>
+  </Col>
+
+  {/* Completed */}
+  <Col md="6" xl="4">
+    <div className="card mb-3 widget-content">
+      <div className="widget-content-outer">
+        <div className="widget-content-wrapper">
+          <div className="widget-content-left">
+            <div className="widget-heading">Completed</div>
+          </div>
+          <div className="widget-content-right">
+            <div className="widget-numbers text-info">
+              {summary?.completedCount ?? 0}
+            </div>
+          </div>
+        </div>
+        <div className="widget-progress-wrapper">
+                                <Progress className="progress-bar-sm progress-bar-animated-alt" color="danger" value="85"/>
+                                <div className="progress-sub-label">
+                                  <div className="sub-label-left">Sales</div>
+                                  <div className="sub-label-right">100%</div>
+                                </div>
+                              </div>
+      </div>
+    </div>
+  </Col>
+
+  {/* Failed */}
+  <Col md="6" xl="4">
+    <div className="card mb-3 widget-content">
+      <div className="widget-content-outer">
+        <div className="widget-content-wrapper">
+          <div className="widget-content-left">
+            <div className="widget-heading">Failed</div>
+          </div>
+          <div className="widget-content-right">
+            <div className="widget-numbers text-danger">
+              {summary?.failedCount ?? 0}
+            </div>
+          </div>
+          </div>
+            <div className="widget-progress-wrapper">
+                                  <Progress className="progress-bar-sm progress-bar-animated-alt" color="success" value="46"/>
+                                  <div className="progress-sub-label">
+                                    <div className="sub-label-left"> Progress</div>
+                                    <div className="sub-label-right">100%</div>
+                                  </div>
+                                </div>
+        
+      </div>
+    </div>
+  </Col>
+
+  {/* Cancelled */}
+  <Col md="6" xl="4">
+    <div className="card mb-3 widget-content">
+      <div className="widget-content-outer">
+        <div className="widget-content-wrapper">
+          <div className="widget-content-left">
+            <div className="widget-heading">Cancelled</div>
+          </div>
+          <div className="widget-content-right">
+            <div className="widget-numbers text-warning">
+              {summary?.cancelledCount ?? 0}
+            </div>
+          </div>
+        </div>
+         <div className="widget-progress-wrapper">
+                                  <Progress className="progress-bar-sm progress-bar-animated-alt" color="success" value="46"/>
+                                  <div className="progress-sub-label">
+                                    <div className="sub-label-left"> Progress</div>
+                                    <div className="sub-label-right">100%</div>
+                                  </div>
+                                </div>
+      </div>
+    </div>
+  </Col>
+
+  {/* Pending */}
+  <Col md="6" xl="4">
+    <div className="card mb-3 widget-content">
+      <div className="widget-content-outer">
+        <div className="widget-content-wrapper">
+          <div className="widget-content-left">
+            <div className="widget-heading">Pending</div>
+          </div>
+          <div className="widget-content-right">
+            <div className="widget-numbers text-primary">
+              {summary?.pendingCount ?? 0}
+            </div>
+          </div>
+        </div>
+         <div className="widget-progress-wrapper">
+                                <Progress className="progress-bar-sm" color="primary" value="71"/>
+                                <div className="progress-sub-label">
+                                  <div className="sub-label-left">Percentage</div>
+                                  <div className="sub-label-right">100%</div>
+                                </div>
+                              </div>
+      </div>
+    </div>
+  </Col>
+
+  {/* Total Amount */}
+  <Col md="6" xl="4">
+    <div className="card mb-3 widget-content">
+      <div className="widget-content-outer">
+        <div className="widget-content-wrapper">
+          <div className="widget-content-left">
+            <div className="widget-heading">Total Amount</div>
+          </div>
+          <div className="widget-content-right">
+            <div className="widget-numbers text-focus">
+              ₹{summary?.totalAmount?.toLocaleString(undefined, { maximumFractionDigits: 2 }) ?? 0}
+            </div>
+          </div>
+        </div>
+         <div className="widget-progress-wrapper">
+                                <Progress className="progress-bar-sm progress-bar-animated-alt" color="danger" value="85"/>
+                                <div className="progress-sub-label">
+                                  <div className="sub-label-left">Percentage</div>
+                                  <div className="sub-label-right">100%</div>
+                                </div>
+                              </div>
+      </div>
+    </div>
+  </Col>
+</Row>
+
               <Row>
-                <Col md="6" xl="4">
-                  <div className="card mb-3 widget-content">
-                    <div className="widget-content-outer">
-                      <div className="widget-content-wrapper">
-                        <div className="widget-content-left">
-                          <div className="widget-heading">Total Orders</div>
-                          <div className="widget-subheading">
-                            Last year expenses
-                          </div>
-                        </div>
-                        <div className="widget-content-right">
-                          <div className="widget-numbers text-success">1896</div>
-                        </div>
-                      </div>
-                      <div className="widget-progress-wrapper">
-                        <Progress className="progress-bar-sm" color="primary" value="71"/>
-                        <div className="progress-sub-label">
-                          <div className="sub-label-left">YoY Growth</div>
-                          <div className="sub-label-right">100%</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-                <Col md="6" xl="4">
-                  <div className="card mb-3 widget-content">
-                    <div className="widget-content-outer">
-                      <div className="widget-content-wrapper">
-                        <div className="widget-content-left">
-                          <div className="widget-heading">Products Sold</div>
-                          <div className="widget-subheading">Revenue streams</div>
-                        </div>
-                        <div className="widget-content-right">
-                          <div className="widget-numbers text-warning">$3M</div>
-                        </div>
-                      </div>
-                      <div className="widget-progress-wrapper">
-                        <Progress className="progress-bar-sm progress-bar-animated-alt" color="danger" value="85"/>
-                        <div className="progress-sub-label">
-                          <div className="sub-label-left">Sales</div>
-                          <div className="sub-label-right">100%</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-                <Col md="6" xl="4">
-                  <div className="card mb-3 widget-content">
-                    <div className="widget-content-outer">
-                      <div className="widget-content-wrapper">
-                        <div className="widget-content-left">
-                          <div className="widget-heading">Followers</div>
-                          <div className="widget-subheading">
-                            People Interested
-                          </div>
-                        </div>
-                        <div className="widget-content-right">
-                          <div className="widget-numbers text-danger">45,9%</div>
-                        </div>
-                      </div>
-                      <div className="widget-progress-wrapper">
-                        <Progress className="progress-bar-sm progress-bar-animated-alt" color="success" value="46"/>
-                        <div className="progress-sub-label">
-                          <div className="sub-label-left">Twitter Progress</div>
-                          <div className="sub-label-right">100%</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-                <Col md="6" xl="4" className="d-xl-none d-lg-block">
-                  <div className="card mb-3 widget-content">
-                    <div className="widget-content-outer">
-                      <div className="widget-content-wrapper">
-                        <div className="widget-content-left">
-                          <div className="widget-heading">Income</div>
-                          <div className="widget-subheading">Expected totals</div>
-                        </div>
-                        <div className="widget-content-right">
-                          <div className="widget-numbers text-focus">$147</div>
-                        </div>
-                      </div>
-                      <div className="widget-progress-wrapper">
-                        <Progress className="progress-bar-sm progress-bar-animated-alt" color="info" value="54"/>
-                        <div className="progress-sub-label">
-                          <div className="sub-label-left">Expenses</div>
-                          <div className="sub-label-right">100%</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col lg="12" xl="6">
-                  <Row>
-                    <Col md="6" lg="3" xl="6">
-                      <div className="card mb-3 widget-chart widget-chart2 text-start card-btm-border card-shadow-success border-success">
-                        <div className="widget-chat-wrapper-outer">
-                          <div className="widget-chart-content pt-3 ps-3 pb-1">
-                            <div className="widget-chart-flex">
-                              <div className="widget-numbers">
-                                <div className="widget-chart-flex">
-                                  <div className="fsize-4">
-                                    <small className="opacity-5">$</small>
-                                    <CountUp start={0} end={874} separator="" decimals={0} decimal="" prefix="" duration="10"/>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <h6 className="widget-subheading mb-0 opacity-5">
-                              sales last month
-                            </h6>
-                          </div>
-                          <Row className="g-0 widget-chart-wrapper mt-3 mb-3 ps-2 he-auto">
-                            <Col md="9">
-                              <Sparklines data={sampleData}>
-                                <SparklinesCurve
-                                  style={{
-                                    strokeWidth: 3,
-                                    stroke: "#3ac47d",
-                                    fill: "none",
-                                  }}/>
-                              </Sparklines>
-                            </Col>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="6" lg="3" xl="6">
-                      <div className="card mb-3 widget-chart widget-chart2 text-start card-btm-border card-shadow-primary border-primary">
-                        <div className="widget-chat-wrapper-outer">
-                          <div className="widget-chart-content pt-3 ps-3 pb-1">
-                            <div className="widget-chart-flex">
-                              <div className="widget-numbers">
-                                <div className="widget-chart-flex">
-                                  <div className="fsize-4">
-                                    <small className="opacity-5">$</small>
-                                    <CountUp start={0} end={1283} separator="" decimals={0} decimal="" prefix="" duration="10"/>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <h6 className="widget-subheading mb-0 opacity-5">
-                              sales Income
-                            </h6>
-                          </div>
-                          <Row className="g-0 widget-chart-wrapper mt-3 mb-3 ps-2 he-auto">
-                            <Col md="9">
-                              <Sparklines data={sampleData2}>
-                                <SparklinesCurve
-                                  style={{
-                                    strokeWidth: 3,
-                                    stroke: "#545cd8",
-                                    fill: "none",
-                                  }}/>
-                              </Sparklines>
-                            </Col>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="6" lg="3" xl="6">
-                      <div className="card mb-3 widget-chart widget-chart2 text-start card-btm-border card-shadow-warning border-warning">
-                        <div className="widget-chat-wrapper-outer">
-                          <div className="widget-chart-content pt-3 ps-3 pb-1">
-                            <div className="widget-chart-flex">
-                              <div className="widget-numbers">
-                                <div className="widget-chart-flex">
-                                  <div className="fsize-4">
-                                    <small className="opacity-5">$</small>
-                                    <CountUp start={0} end={1286} separator="" decimals={0} decimal="" prefix="" duration="10"/>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <h6 className="widget-subheading mb-0 opacity-5">
-                              last month sales
-                            </h6>
-                          </div>
-                          <Row className="g-0 widget-chart-wrapper mt-3 mb-3 ps-2 he-auto">
-                            <Col md="9">
-                              <Sparklines data={sampleData3}>
-                                <SparklinesCurve
-                                  style={{
-                                    strokeWidth: 3,
-                                    stroke: "#f7b924",
-                                    fill: "none",
-                                  }}/>
-                              </Sparklines>
-                            </Col>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                    <Col md="6" lg="3" xl="6">
-                      <div className="card mb-3 widget-chart widget-chart2 text-start card-btm-border card-shadow-danger border-danger">
-                        <div className="widget-chat-wrapper-outer">
-                          <div className="widget-chart-content pt-3 ps-3 pb-1">
-                            <div className="widget-chart-flex">
-                              <div className="widget-numbers">
-                                <div className="widget-chart-flex">
-                                  <div className="fsize-4">
-                                    <small className="opacity-5">$</small>
-                                    <CountUp start={0} end={564} separator="" decimals={0} decimal="" prefix="" duration="10"/>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <h6 className="widget-subheading mb-0 opacity-5">
-                              total revenue
-                            </h6>
-                          </div>
-                          <Row className="g-0 widget-chart-wrapper mt-3 mb-3 ps-2 he-auto">
-                            <Col md="9">
-                              <Sparklines data={sampleData4}>
-                                <SparklinesCurve
-                                  style={{
-                                    strokeWidth: 3,
-                                    stroke: "#d92550",
-                                    fill: "none",
-                                  }}/>
-                              </Sparklines>
-                            </Col>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col lg="12" xl="6">
+                
+                <Col lg="12" xl="12">
                   <Card className="mb-3">
                     <CardHeader className="card-header-tab">
                       <div className="card-header-title">
@@ -681,6 +628,44 @@ export default class CRMDashboard2 extends Component {
                   </Card>
                 </Col>
               </Row>
+               <Row>
+               <Col lg="12" xl="12">
+  <ComposedChart data={chartData} margin={{ top: 20, right: 30, bottom: 20, left: 20 }}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="month" />
+        <YAxis yAxisId="left" label={{ value: "Amount", angle: -90, position: "insideLeft" }} />
+        <YAxis yAxisId="right" orientation="right" label={{ value: "Count", angle: -90, position: "insideRight" }} />
+        <Tooltip formatter={(value) => new Intl.NumberFormat().format(value)} />
+        <Legend />
+
+        {/* Bars: totalAmount */}
+        {Object.keys(colors).map((type) => (
+          <Bar
+            key={`${type}_amount`}
+            yAxisId="left"
+            dataKey={`${type}_amount`}
+            name={`${type} Amount`}
+            fill={colors[type]}
+            barSize={20}
+          />
+        ))}
+
+        {/* Lines: count */}
+        {Object.keys(colors).map((type) => (
+          <Line
+            key={`${type}_count`}
+            yAxisId="right"
+            type="monotone"
+            dataKey={`${type}_count`}
+            name={`${type} Count`}
+            stroke={colors[type]}
+            strokeWidth={2}
+            dot={{ r: 4 }}
+          />
+        ))}
+      </ComposedChart>
+</Col>
+             </Row>
               <Card className="main-card mb-3">
                 <CardHeader className="card-header-tab">
                   <div className="card-header-title font-size-lg text-capitalize fw-normal">
@@ -720,564 +705,14 @@ export default class CRMDashboard2 extends Component {
                   </div>
                 </CardHeader>
                 <CardBody>
-                <DataTable data={data}
-                    columns={columns}
+                <DataTable 
                     pagination
                     fixedHeader
                     fixedHeaderScrollHeight="400px"
                   />
                 </CardBody>
               </Card>
-              <Row>
-                <Col lg="5">
-                  <Row>
-                    <Col md="6" lg="12">
-                      <Card className="card-hover-shadow-2x mb-3 card-btm-border card-shadow-primary border-primary">
-                        <CardHeader className="rm-border pb-0 mt-sm-3 responsive-center">
-                          <div>
-                            <h5 className="menu-header-title text-capitalize fsize-2 text-muted text-start opacity-6">
-                              Received Messages
-                            </h5>
-                          </div>
-                        </CardHeader>
-                        <div className="widget-chart widget-chart2 text-start p-0">
-                          <div className="widget-chat-wrapper-outer">
-                            <div className="widget-chart-content pt-3 pe-3 ps-5">
-                              <div className="widget-chart-flex">
-                                <div className="widget-numbers">
-                                  <div className="widget-chart-flex">
-                                    <div className="text-primary">
-                                      <CountUp start={0} end={348} separator="" decimals={0}
-                                        decimal="," prefix="" duration="10"/>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="widget-chart-wrapper widget-chart-wrapper-lg he-auto opacity-3 m-0 p-1">
-                              <ResponsiveContainer height={114}>
-                                <AreaChart data={data3}
-                                  margin={{
-                                    top: -20,
-                                    right: 0,
-                                    left: 0,
-                                    bottom: 0,
-                                  }}>
-                                  <Tooltip />
-                                  <Area type="monotoneX" dataKey="uv" stroke="#545cd8"
-                                    strokeOpacity=".8" strokeWidth={3} fill="#545cd8" fillOpacity=".08"/>
-                                </AreaChart>
-                              </ResponsiveContainer>
-                            </div>
-                          </div>
-                        </div>
-                      </Card>
-                    </Col>
-                    <Col md="6" lg="12">
-                      <Card className="card-hover-shadow-2x mb-3 card-btm-border card-shadow-danger border-danger">
-                        <CardHeader className="rm-border pb-0 mt-sm-3 responsive-center">
-                          <div>
-                            <h5 className="menu-header-title text-capitalize fsize-2 text-muted text-start opacity-6">
-                              Sent Messages
-                            </h5>
-                          </div>
-                        </CardHeader>
-                        <div className="widget-chart widget-chart2 text-start p-0">
-                          <div className="widget-chat-wrapper-outer">
-                            <div className="widget-chart-content pt-3 pe-3 ps-5">
-                              <div className="widget-chart-flex">
-                                <div className="widget-numbers">
-                                  <div className="widget-chart-flex">
-                                    <div className="text-danger">
-                                      <CountUp start={0} end={425} separator="" decimals={0} decimal="," prefix="" duration="10"/>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="widget-chart-wrapper widget-chart-wrapper-lg he-auto opacity-3 m-0 p-1">
-                              <ResponsiveContainer height={114}>
-                                <AreaChart data={data2}
-                                  margin={{
-                                    top: -20,
-                                    right: 0,
-                                    left: 0,
-                                    bottom: 0,
-                                  }}>
-                                  <Tooltip />
-                                  <Area type="monotoneX" dataKey="uv" stroke="#d92550" strokeOpacity=".8"
-                                    strokeWidth={3} fill="#d92550" fillOpacity=".08"/>
-                                </AreaChart>
-                              </ResponsiveContainer>
-                            </div>
-                          </div>
-                        </div>
-                      </Card>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col lg="7">
-                  <Card className="mb-3">
-                    <CardHeader className="card-header-tab card-header-tab-animation">
-                      <div className="card-header-title">
-                        <i className="header-icon lnr-apartment icon-gradient bg-love-kiss"> {" "} </i>
-                        Sales Report
-                      </div>
-                      <Nav>
-                        <NavItem>
-                          <NavLink href="#"
-                            className={classnames({
-                              active: this.state.activeTab2 === "222",
-                            })}
-                            onClick={() => {
-                              this.toggle2("222");
-                            }}>
-                            Last
-                          </NavLink>
-                        </NavItem>
-                        <NavItem>
-                          <NavLink href="#"
-                            className={classnames({
-                              active: this.state.activeTab2 === "111",
-                            })}
-                            onClick={() => {
-                              this.toggle2("111");
-                            }}>
-                            Current
-                          </NavLink>
-                        </NavItem>
-                      </Nav>
-                    </CardHeader>
-                    <CardBody>
-                      <TabContent activeTab={this.state.activeTab2}>
-                        <TabPane tabId="111">
-                          <div className="card mb-3 widget-chart widget-chart2 text-start p-0">
-                            <div className="widget-chat-wrapper-outer">
-                              <div className="widget-chart-content pt-3 pe-3 ps-3">
-                                <div className="widget-chart-flex">
-                                  <div className="widget-numbers">
-                                    <div className="widget-chart-flex">
-                                      <div>
-                                        <small className="opacity-5">$</small>
-                                        <CountUp start={0} end={368} separator="" decimals={0} decimal="," prefix="" duration="10"/>
-                                      </div>
-                                      <div className="widget-title ms-2 opacity-5 font-size-lg text-muted">
-                                        Total Leads
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="widget-chart-wrapper he-auto opacity-10 m-0">
-                                <ResponsiveContainer height={162}>
-                                  <AreaChart data={data55}
-                                    margin={{
-                                      top: -10,
-                                      right: 0,
-                                      left: 0,
-                                      bottom: 0,
-                                    }}>
-                                    <Tooltip />
-                                    <Area type="monotoneX" dataKey="uv" strokeWidth={0} fill="#30b1ff"/>
-                                  </AreaChart>
-                                </ResponsiveContainer>
-                              </div>
-                            </div>
-                          </div>
-                          <h6 className="text-muted text-uppercase font-size-md opacity-5 fw-normal">
-                            Top Authors
-                          </h6>
-                          <div className="scroll-area-sm">
-                            <PerfectScrollbar>
-                              <ListGroup className="rm-list-borders rm-list-borders-scroll" flush>
-                                <ListGroupItem>
-                                  <div className="widget-content p-0">
-                                    <div className="widget-content-wrapper">
-                                      <div className="widget-content-left me-3">
-                                        <img width={42} className="rounded-circle" src={avatar1} alt=""/>
-                                      </div>
-                                      <div className="widget-content-left">
-                                        <div className="widget-heading">
-                                          Ella-Rose Henry
-                                        </div>
-                                        <div className="widget-subheading">
-                                          Web Developer
-                                        </div>
-                                      </div>
-                                      <div className="widget-content-right">
-                                        <div className="font-size-xlg text-muted">
-                                          <small className="opacity-5 pe-1">
-                                            $
-                                          </small>
-                                          <CountUp start={0} end={129} separator="" decimals={0} decimal="." prefix="" duration="10"/>
-                                          <small className="text-danger ps-2">
-                                            <FontAwesomeIcon icon={faAngleDown} />
-                                          </small>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                  <div className="widget-content p-0">
-                                    <div className="widget-content-wrapper">
-                                      <div className="widget-content-left me-3">
-                                        <img width={42} className="rounded-circle" src={avatar2} alt=""/>
-                                      </div>
-                                      <div className="widget-content-left">
-                                        <div className="widget-heading">
-                                          Ruben Tillman
-                                        </div>
-                                        <div className="widget-subheading">
-                                          UI Designer
-                                        </div>
-                                      </div>
-                                      <div className="widget-content-right">
-                                        <div className="font-size-xlg text-muted">
-                                          <small className="opacity-5 pe-1">
-                                            $
-                                          </small>
-                                          <CountUp start={0} end={54} separator="" decimals={0} decimal="." prefix="" duration="15"/>
-                                          <small className="text-success ps-2">
-                                            <FontAwesomeIcon icon={faAngleUp} />
-                                          </small>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                  <div className="widget-content p-0">
-                                    <div className="widget-content-wrapper">
-                                      <div className="widget-content-left me-3">
-                                        <img width={42} className="rounded-circle" src={avatar3} alt=""/>
-                                      </div>
-                                      <div className="widget-content-left">
-                                        <div className="widget-heading">
-                                          Vinnie Wagstaff
-                                        </div>
-                                        <div className="widget-subheading">
-                                          Java Programmer
-                                        </div>
-                                      </div>
-                                      <div className="widget-content-right">
-                                        <div className="font-size-xlg text-muted">
-                                          <small className="opacity-5 pe-1">
-                                            $
-                                          </small>
-                                          <CountUp start={0} end={431} separator="" decimals={0} decimal="." prefix="" duration="20"/>
-                                          <small className="text-warning ps-2">
-                                            <FontAwesomeIcon icon={faDotCircle} />
-                                          </small>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                  <div className="widget-content p-0">
-                                    <div className="widget-content-wrapper">
-                                      <div className="widget-content-left me-3">
-                                        <img width={42} className="rounded-circle" src={avatar1} alt=""/>
-                                      </div>
-                                      <div className="widget-content-left">
-                                        <div className="widget-heading">
-                                          Ella-Rose Henry
-                                        </div>
-                                        <div className="widget-subheading">
-                                          Web Developer
-                                        </div>
-                                      </div>
-                                      <div className="widget-content-right">
-                                        <div className="font-size-xlg text-muted">
-                                          <small className="opacity-5 pe-1">
-                                            $
-                                          </small>
-                                          <CountUp start={0} end={129} separator="" decimals={0} decimal="." prefix="" duration="10"/>
-                                          <small className="text-danger ps-2">
-                                            <FontAwesomeIcon icon={faAngleDown} />
-                                          </small>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                  <div className="widget-content p-0">
-                                    <div className="widget-content-wrapper">
-                                      <div className="widget-content-left me-3">
-                                        <img width={42} className="rounded-circle" src={avatar2} alt=""/>
-                                      </div>
-                                      <div className="widget-content-left">
-                                        <div className="widget-heading">
-                                          Ruben Tillman
-                                        </div>
-                                        <div className="widget-subheading">
-                                          UI Designer
-                                        </div>
-                                      </div>
-                                      <div className="widget-content-right">
-                                        <div className="font-size-xlg text-muted">
-                                          <small className="opacity-5 pe-1">
-                                            $
-                                          </small>
-                                          <CountUp start={0} end={54} separator="" decimals={0} decimal="." prefix="" duration="15"/>
-                                          <small className="text-success ps-2">
-                                            <FontAwesomeIcon icon={faAngleUp} />
-                                          </small>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ListGroupItem>
-                              </ListGroup>
-                            </PerfectScrollbar>
-                          </div>
-                        </TabPane>
-                        <TabPane tabId="222">
-                          <div className="card mb-3 widget-chart widget-chart2 text-start p-0">
-                            <div className="widget-chat-wrapper-outer">
-                              <div className="widget-chart-content pt-3 pe-3 ps-3">
-                                <div className="widget-chart-flex">
-                                  <div className="widget-numbers">
-                                    <div className="widget-chart-flex">
-                                      <div>
-                                        <small className="opacity-5">$</small>
-                                        <CountUp start={0} end={851} separator="" decimals={0} decimal="," prefix="" duration="10"/>
-                                      </div>
-                                      <div className="widget-title ms-2 opacity-5 font-size-lg text-muted">
-                                        Sales Total
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="widget-chart-wrapper he-auto opacity-10 m-0">
-                                <ResponsiveContainer height={162}>
-                                  <LineChart data={data55}
-                                    margin={{
-                                      top: 5,
-                                      right: 10,
-                                      left: 10,
-                                      bottom: 0,
-                                    }}>
-                                    <Line type="monotone" dataKey="pv" stroke="#3ac47d" strokeWidth={3}/>
-                                  </LineChart>
-                                </ResponsiveContainer>
-                              </div>
-                            </div>
-                          </div>
-                          <h6 className="text-muted text-uppercase font-size-md opacity-5 fw-normal">
-                            Last Month Highlights
-                          </h6>
-                          <div className="scroll-area-sm">
-                            <PerfectScrollbar>
-                              <ListGroup className="rm-list-borders rm-list-borders-scroll" flush>
-                                <ListGroupItem>
-                                  <div className="widget-content p-0">
-                                    <div className="widget-content-wrapper">
-                                      <div className="widget-content-left me-3">
-                                        <img width={42} className="rounded-circle" src={avatar1} alt=""/>
-                                      </div>
-                                      <div className="widget-content-left">
-                                        <div className="widget-heading">
-                                          Ella-Rose Henry
-                                        </div>
-                                        <div className="widget-subheading">
-                                          Web Developer
-                                        </div>
-                                      </div>
-                                      <div className="widget-content-right">
-                                        <div className="font-size-xlg text-muted">
-                                          <small className="opacity-5 pe-1">
-                                            $
-                                          </small>
-                                          <CountUp start={0} end={129} separator="" decimals={0} decimal="." prefix="" duration="10"/>
-                                          <small className="text-danger ps-2">
-                                            <FontAwesomeIcon icon={faAngleDown} />
-                                          </small>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                  <div className="widget-content p-0">
-                                    <div className="widget-content-wrapper">
-                                      <div className="widget-content-left me-3">
-                                        <img width={42} className="rounded-circle" src={avatar2} alt=""/>
-                                      </div>
-                                      <div className="widget-content-left">
-                                        <div className="widget-heading">
-                                          Ruben Tillman
-                                        </div>
-                                        <div className="widget-subheading">
-                                          UI Designer
-                                        </div>
-                                      </div>
-                                      <div className="widget-content-right">
-                                        <div className="font-size-xlg text-muted">
-                                          <small className="opacity-5 pe-1">
-                                            $
-                                          </small>
-                                          <CountUp start={0} end={54} separator="" decimals={0} decimal="." prefix="" duration="15"/>
-                                          <small className="text-success ps-2">
-                                            <FontAwesomeIcon icon={faAngleUp} />
-                                          </small>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                  <div className="widget-content p-0">
-                                    <div className="widget-content-wrapper">
-                                      <div className="widget-content-left me-3">
-                                        <img width={42} className="rounded-circle" src={avatar3} alt=""/>
-                                      </div>
-                                      <div className="widget-content-left">
-                                        <div className="widget-heading">
-                                          Vinnie Wagstaff
-                                        </div>
-                                        <div className="widget-subheading">
-                                          Java Programmer
-                                        </div>
-                                      </div>
-                                      <div className="widget-content-right">
-                                        <div className="font-size-xlg text-muted">
-                                          <small className="opacity-5 pe-1">
-                                            $
-                                          </small>
-                                          <CountUp start={0} end={431} separator="" decimals={0} decimal="." prefix="" duration="20"/>
-                                          <small className="text-warning ps-2">
-                                            <FontAwesomeIcon icon={faDotCircle} />
-                                          </small>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                  <div className="widget-content p-0">
-                                    <div className="widget-content-wrapper">
-                                      <div className="widget-content-left me-3">
-                                        <img width={42} className="rounded-circle" src={avatar1} alt=""/>
-                                      </div>
-                                      <div className="widget-content-left">
-                                        <div className="widget-heading">
-                                          Ella-Rose Henry
-                                        </div>
-                                        <div className="widget-subheading">
-                                          Web Developer
-                                        </div>
-                                      </div>
-                                      <div className="widget-content-right">
-                                        <div className="font-size-xlg text-muted">
-                                          <small className="opacity-5 pe-1">
-                                            $
-                                          </small>
-                                          <CountUp start={0} end={129} separator="" decimals={0} decimal="." prefix="" duration="10"/>
-                                          <small className="text-danger ps-2">
-                                            <FontAwesomeIcon icon={faAngleDown} />
-                                          </small>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                  <div className="widget-content p-0">
-                                    <div className="widget-content-wrapper">
-                                      <div className="widget-content-left me-3">
-                                        <img width={42} className="rounded-circle" src={avatar2} alt=""/>
-                                      </div>
-                                      <div className="widget-content-left">
-                                        <div className="widget-heading">
-                                          Ruben Tillman
-                                        </div>
-                                        <div className="widget-subheading">
-                                          UI Designer
-                                        </div>
-                                      </div>
-                                      <div className="widget-content-right">
-                                        <div className="font-size-xlg text-muted">
-                                          <small className="opacity-5 pe-1">
-                                            $
-                                          </small>
-                                          <CountUp start={0} end={54} separator="" decimals={0} decimal="." prefix="" duration="15"/>
-                                          <small className="text-success ps-2">
-                                            <FontAwesomeIcon icon={faAngleUp} />
-                                          </small>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                  <div className="widget-content p-0">
-                                    <div className="widget-content-wrapper">
-                                      <div className="widget-content-left me-3">
-                                        <img width={42} className="rounded-circle" src={avatar1} alt=""/>
-                                      </div>
-                                      <div className="widget-content-left">
-                                        <div className="widget-heading">
-                                          Ella-Rose Henry
-                                        </div>
-                                        <div className="widget-subheading">
-                                          Web Developer
-                                        </div>
-                                      </div>
-                                      <div className="widget-content-right">
-                                        <div className="font-size-xlg text-muted">
-                                          <small className="opacity-5 pe-1">
-                                            $
-                                          </small>
-                                          <CountUp start={0} end={129} separator="" decimals={0} decimal="." prefix="" duration="10"/>
-                                          <small className="text-danger ps-2">
-                                            <FontAwesomeIcon icon={faAngleDown} />
-                                          </small>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ListGroupItem>
-                                <ListGroupItem>
-                                  <div className="widget-content p-0">
-                                    <div className="widget-content-wrapper">
-                                      <div className="widget-content-left me-3">
-                                        <img width={42} className="rounded-circle" src={avatar2} alt=""/>
-                                      </div>
-                                      <div className="widget-content-left">
-                                        <div className="widget-heading">
-                                          Ruben Tillman
-                                        </div>
-                                        <div className="widget-subheading">
-                                          UI Designer
-                                        </div>
-                                      </div>
-                                      <div className="widget-content-right">
-                                        <div className="font-size-xlg text-muted">
-                                          <small className="opacity-5 pe-1">
-                                            $
-                                          </small>
-                                          <CountUp start={0} end={54} separator="" decimals={0} decimal="." prefix="" duration="15"/>
-                                          <small className="text-success ps-2">
-                                            <FontAwesomeIcon icon={faAngleUp} />
-                                          </small>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </ListGroupItem>
-                              </ListGroup>
-                            </PerfectScrollbar>
-                          </div>
-                        </TabPane>
-                      </TabContent>
-                    </CardBody>
-                  </Card>
-                </Col>
-              </Row>
+            
              
             </div>
           </CSSTransition>

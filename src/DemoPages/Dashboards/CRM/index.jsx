@@ -25,7 +25,7 @@ export default class CRMDashboard extends Component {
               <Tabs defaultActiveKey="1"
                 renderTabBar={() => <ScrollableInkTabBar />}
                 renderTabContent={() => <TabContent />}>
-                <TabPane tab="Accounts" key="1">
+                <TabPane tab="Transactions Dash" key="1">
                   <CRMDashboard2 />
                 </TabPane>
                 <TabPane tab="Branch Updates" key="2">
