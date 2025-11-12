@@ -24,6 +24,7 @@ import {
   Progress,
   CardFooter,
   ButtonGroup,
+  Table,
 } from "reactstrap";
 
 import {
@@ -54,71 +55,8 @@ import { Sparklines, SparklinesCurve } from "react-sparklines";
 import { makeData } from "../../../Tables/DataTables/Examples/utils";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import CountUp from "react-countup";
+import CountUp from "react-countup"; 
 
-import avatar1 from "../../../../assets/utils/images/avatars/1.jpg";
-import avatar2 from "../../../../assets/utils/images/avatars/2.jpg";
-import avatar3 from "../../../../assets/utils/images/avatars/3.jpg";
-
-const data55 = [
-  { name: "Page A", uv: 4000, pv: 2400, amt: 2400 },
-  { name: "Page B", uv: 3000, pv: 1398, amt: 2210 },
-  { name: "Page C", uv: 2000, pv: 9800, amt: 2290 },
-  { name: "Page D", uv: 2780, pv: 3908, amt: 2000 },
-  { name: "Page E", uv: 1890, pv: 4800, amt: 2181 },
-  { name: "Page F", uv: 2390, pv: 3800, amt: 2500 },
-  { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
-  { name: "Page C", uv: 2000, pv: 6800, amt: 2290 },
-  { name: "Page D", uv: 4780, pv: 7908, amt: 2000 },
-  { name: "Page E", uv: 2890, pv: 9800, amt: 2181 },
-  { name: "Page F", uv: 1390, pv: 3800, amt: 1500 },
-  { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
-];
-
-const data22 = [
-  { name: "Page A", uv: 4000, pv: 2400, amt: 2400 },
-  { name: "Page B", uv: 3000, pv: 1398, amt: 2210 },
-  { name: "Page C", uv: 2000, pv: 9800, amt: 2290 },
-  { name: "Page D", uv: 2780, pv: 3908, amt: 2000 },
-  { name: "Page E", uv: 1890, pv: 4800, amt: 2181 },
-  { name: "Page F", uv: 2390, pv: 3800, amt: 2500 },
-  { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
-  { name: "Page C", uv: 2000, pv: 6800, amt: 2290 },
-  { name: "Page D", uv: 4780, pv: 7908, amt: 2000 },
-  { name: "Page E", uv: 2890, pv: 9800, amt: 2181 },
-  { name: "Page F", uv: 1390, pv: 3800, amt: 1500 },
-  { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
-];
-
-const data3 = [
-  { name: "Page C", uv: 2000, pv: 9800, amt: 2290 },
-  { name: "Page F", uv: 2390, pv: 3800, amt: 2500 },
-  { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
-  { name: "Page D", uv: 4780, pv: 7908, amt: 2000 },
-  { name: "Page A", uv: 4000, pv: 2400, amt: 2400 },
-  { name: "Page F", uv: 1390, pv: 3800, amt: 1500 },
-  { name: "Page B", uv: 3000, pv: 1398, amt: 2210 },
-  { name: "Page E", uv: 2890, pv: 9800, amt: 2181 },
-  { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
-  { name: "Page D", uv: 2780, pv: 3908, amt: 2000 },
-  { name: "Page E", uv: 1890, pv: 4800, amt: 2181 },
-  { name: "Page C", uv: 2000, pv: 6800, amt: 2290 },
-];
-
-const data2 = [
-  { name: "Page A", uv: 4000, pv: 2400, amt: 2400 },
-  { name: "Page B", uv: 3000, pv: 1398, amt: 2210 },
-  { name: "Page D", uv: 4780, pv: 7908, amt: 2000 },
-  { name: "Page D", uv: 2780, pv: 3908, amt: 2000 },
-  { name: "Page C", uv: 2000, pv: 6800, amt: 2290 },
-  { name: "Page F", uv: 2390, pv: 3800, amt: 2500 },
-  { name: "Page E", uv: 2890, pv: 9800, amt: 2181 },
-  { name: "Page E", uv: 1890, pv: 4800, amt: 2181 },
-  { name: "Page C", uv: 2000, pv: 9800, amt: 2290 },
-  { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
-  { name: "Page G", uv: 3490, pv: 4300, amt: 2100 },
-  { name: "Page F", uv: 1390, pv: 3800, amt: 1500 },
-];
 
 function boxMullerRandom() {
   let phase = true,
@@ -150,6 +88,20 @@ const sampleData = randomData(10);
 const sampleData2 = randomData(15);
 const sampleData3 = randomData(8);
 const sampleData4 = randomData(12);
+const TreeView = ({ label, children }) => {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <div style={{ marginLeft: 20 }}>
+      <div
+        style={{ cursor: "pointer", fontWeight: "bold" }}
+        onClick={() => setOpen(!open)}
+      >
+        {open ? "▼" : "▶"} {label}
+      </div>
+      {open && <div style={{ marginLeft: 20 }}>{children}</div>}
+    </div>
+  );
+};
 
 export default class CRMDashboard2 extends Component {
   constructor(props) {
@@ -160,12 +112,19 @@ export default class CRMDashboard2 extends Component {
       activeTab2: "222",
       activeTab1: "11", 
       data: makeData(), 
+      activeTab: "",
+      datatv : null
     };
+    this.toggle = this.toggle.bind(this);
   }
   componentDidMount() {
     this.fetchSummary();
   }
-
+ toggle(tab) {
+    if (this.state.activeTab !== tab) {
+      this.setState({ activeTab: tab });
+    }
+  }
   // --- Transform data method ---
   transformData(data) {
     const result = {};
@@ -180,19 +139,50 @@ export default class CRMDashboard2 extends Component {
 
     return Object.values(result);
   }
+renderTransactionList(title, transactions) {
+    return (
+      <div key={title} style={{ marginLeft: 20 }}>
+        <TreeView key={title} label={`${title} (${transactions.length})`}>
+          {transactions.map((tx) => (
+            <TreeView key={tx.id} label={`${tx.transactionId} - ${tx.status}`}>
+              <div style={{ marginLeft: 20 }}>
+                <p><strong>Type:</strong> {tx.transactionType}</p>
+                <p><strong>Amount:</strong> {tx.amount}</p>
+                <p><strong>Description:</strong> {tx.description}</p>
+                <p><strong>Created:</strong> {tx.createdAt}</p>
+              </div>
+            </TreeView>
+          ))}
+        </TreeView>
+      </div>
+    );
+  }
+
+   renderSection(sectionTitle, sectionData) {
+    if (!sectionData) return null;
+
+    return (
+      <TreeView key={sectionTitle} label={sectionTitle}>
+        {Object.entries(sectionData).map(([key, txArray]) =>
+          this.renderTransactionList(key, txArray)
+        )}
+      </TreeView>
+    );
+  }
 
   async fetchSummary() {
     try {
       const datadx = await getTransactionsdashboardsummary();
 
       const summaryData = datadx.summary || {};
-
+//debugger;
       const chartData = this.transformData(datadx.monthlyTrend || []);
-
+console.log("Transformed Chart Data:", chartData);
       this.setState({
         summary: summaryData,
         chartData: chartData,
         loading: false,
+        datatv: datadx,
       });
     } catch (err) {
       console.error("Failed to fetch dashboard summary:", err);
@@ -217,7 +207,7 @@ export default class CRMDashboard2 extends Component {
   }
 
   render() {
-   const { summary, chartData, loading } = this.state;
+   const { summary, chartData, loading,activeTab ,datatv} = this.state;
 
 const colors = {
   Fee: "#8884d8",
@@ -388,332 +378,56 @@ const colors = {
   </Col>
 </Row>
 
-              <Row>
-                
-                <Col lg="12" xl="12">
-                  <Card className="mb-3">
-                    <CardHeader className="card-header-tab">
-                      <div className="card-header-title">
-                        <i className="header-icon lnr-rocket icon-gradient bg-tempting-azure"> {" "} </i>
-                        Bandwidth Reports
-                      </div>
-                      <div className="btn-actions-pane-right">
-                        <Button outline
-                          className={
-                            "border-0 btn-pill btn-wide btn-transition " +
-                            classnames({ active: this.state.activeTab1 === "11" })
-                          }
-                          color="alternate"
-                          onClick={() => {
-                            this.toggle1("11");
-                          }}>
-                          Tab 1
-                        </Button>
-                        <Button outline
-                          className={
-                            "ms-1 btn-pill btn-wide border-0 btn-transition " +
-                            classnames({ active: this.state.activeTab1 === "22" })
-                          }
-                          color="alternate"
-                          onClick={() => {
-                            this.toggle1("22");
-                          }}>
-                          Tab 2
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <TabContent activeTab={this.state.activeTab1}>
-                      <TabPane tabId="11">
-                        <CardBody className="pt-2 pb-0">
-                          <Row>
-                            <Col md="6">
-                              <div className="widget-content">
-                                <div className="widget-content-outer">
-                                  <div className="widget-content-wrapper">
-                                    <div className="widget-content-left">
-                                      <div className="widget-numbers fsize-3 text-muted">
-                                        63%
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="widget-content-left fsize-1">
-                                    <div className="text-muted opacity-6">
-                                      Server Errors
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </Col>
-                            <Col md="6">
-                              <div className="widget-content">
-                                <div className="widget-content-outer">
-                                  <div className="widget-content-wrapper">
-                                    <div className="widget-content-left">
-                                      <div className="widget-numbers fsize-3 text-muted">
-                                        $ 1893
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="widget-content-left fsize-1">
-                                    <div className="text-muted opacity-6">
-                                      Total Income
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </Col>
-                            <Col md="6">
-                              <div className="widget-content">
-                                <div className="widget-content-outer">
-                                  <div className="widget-content-wrapper">
-                                    <div className="widget-content-left pe-2 fsize-1">
-                                      <div className="widget-numbers fsize-3 text-alternate">
-                                        61%
-                                      </div>
-                                    </div>
-                                    <div className="widget-content-right w-100">
-                                      <Progress className="progress-bar-xs" color="alternate" value="71"/>
-                                    </div>
-                                  </div>
-                                  <div className="widget-content-left fsize-1">
-                                    <div className="text-muted opacity-6">
-                                      Server Target
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </Col>
-                            <Col md="6">
-                              <div className="widget-content">
-                                <div className="widget-content-outer">
-                                  <div className="widget-content-wrapper">
-                                    <div className="widget-content-left pe-2 fsize-1">
-                                      <div className="widget-numbers fsize-3 text-danger">
-                                        71%
-                                      </div>
-                                    </div>
-                                    <div className="widget-content-right w-100">
-                                      <Progress className="progress-bar-xs" color="danger" value="71"/>
-                                    </div>
-                                  </div>
-                                  <div className="widget-content-left fsize-1">
-                                    <div className="text-muted opacity-6">
-                                      Income Target
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </Col>
-                          </Row>
-                        </CardBody>
-                        <div className="widget-chart p-0">
-                          <ResponsiveContainer height={223}>
-                            <AreaChart data={data22} margin={{ top: -25, right: 0, left: 0, bottom: 0 }}>
-                              <defs>
-                                <linearGradient id="colorPv2" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="10%" stopColor="#f7b924" stopOpacity={0.7}/>
-                                  <stop offset="90%" stopColor="#f7b924" stopOpacity={0}/>
-                                </linearGradient>
-                              </defs>
-                              <Tooltip />
-                              <Area type="monotoneX" dataKey="uv" stroke="#f7b924" strokeWidth={2}
-                                fillOpacity={1} fill="url(#colorPv2)"/>
-                            </AreaChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </TabPane>
-                      <TabPane tabId="22">
-                        <CardBody className="pt-2">
-                          <Row>
-                            <Col lg="6">
-                              <div className="widget-content">
-                                <div className="widget-content-outer">
-                                  <div className="widget-content-wrapper">
-                                    <div className="widget-content-left">
-                                      <div className="widget-numbers fsize-3 text-muted">
-                                        63%
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="widget-content-left fsize-1">
-                                    <div className="text-muted opacity-6">
-                                      Server Errors
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </Col>
-                            <Col lg="6">
-                              <div className="widget-content">
-                                <div className="widget-content-outer">
-                                  <div className="widget-content-wrapper">
-                                    <div className="widget-content-left">
-                                      <div className="widget-numbers fsize-3 text-muted">
-                                        $ 1893
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="widget-content-left fsize-1">
-                                    <div className="text-muted opacity-6">
-                                      Total Income
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </Col>
-                          </Row>
-                          <div className="divider" />
-                          <Row>
-                            <Col lg="6">
-                              <div className="widget-content">
-                                <div className="widget-content-outer">
-                                  <div className="widget-content-wrapper">
-                                    <div className="widget-content-left">
-                                      <div className="widget-numbers fsize-3 text-muted">
-                                        83%
-                                      </div>
-                                    </div>
-                                    <div className="widget-content-right">
-                                      <div className="text-muted opacity-6">
-                                        Servers Load
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="widget-progress-wrapper mt-1">
-                                    <Progress className="progress-bar-sm progress-bar-animated-alt" color="danger" value="83"/>
-                                  </div>
-                                </div>
-                              </div>
-                            </Col>
-                            <Col lg="6">
-                              <div className="widget-content">
-                                <div className="widget-content-outer">
-                                  <div className="widget-content-wrapper">
-                                    <div className="widget-content-left">
-                                      <div className="widget-numbers fsize-3 text-muted">
-                                        48%
-                                      </div>
-                                    </div>
-                                    <div className="widget-content-right">
-                                      <div className="text-muted opacity-6">
-                                        Reported Bugs
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="widget-progress-wrapper mt-1">
-                                    <Progress className="progress-bar-sm progress-bar-animated-alt" color="alternate" value="48"/>
-                                  </div>
-                                </div>
-                              </div>
-                            </Col>
-                          </Row>
-                        </CardBody>
-                        <div className="widget-chart p-0">
-                          <ResponsiveContainer height={192}>
-                            <AreaChart data={data2} margin={{ top: -25, right: 0, left: 0, bottom: 0 }}>
-                              <defs>
-                                <linearGradient id="colorPv2" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="10%" stopColor="var(--alternate)" stopOpacity={0.7}/>
-                                  <stop offset="90%" stopColor="var(--alternate)" stopOpacity={0}/>
-                                </linearGradient>
-                              </defs>
-                              <Tooltip />
-                              <Area type="monotoneX" dataKey="uv" stroke="var(--alternate)"
-                                strokeWidth={2} fillOpacity={1} fill="url(#colorPv2)"/>
-                            </AreaChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </TabPane>
-                    </TabContent>
-                  </Card>
-                </Col>
-              </Row>
+             
                <Row>
-               <Col lg="12" xl="12">
-  <ComposedChart data={chartData} margin={{ top: 20, right: 30, bottom: 20, left: 20 }}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="month" />
-        <YAxis yAxisId="left" label={{ value: "Amount", angle: -90, position: "insideLeft" }} />
-        <YAxis yAxisId="right" orientation="right" label={{ value: "Count", angle: -90, position: "insideRight" }} />
-        <Tooltip formatter={(value) => new Intl.NumberFormat().format(value)} />
-        <Legend />
+               <Col lg="12" xl="12"> 
+  <ResponsiveContainer width="100%" height={300}>
+  <LineChart data={this.state.chartData}>
+    <CartesianGrid strokeDasharray="3 3" />
+    <XAxis dataKey="month" />
+    <YAxis />
+    <Tooltip />
+    <Legend />
 
-        {/* Bars: totalAmount */}
-        {Object.keys(colors).map((type) => (
-          <Bar
-            key={`${type}_amount`}
-            yAxisId="left"
-            dataKey={`${type}_amount`}
-            name={`${type} Amount`}
-            fill={colors[type]}
-            barSize={20}
-          />
-        ))}
+    {/* Draw lines for each transaction type count */}
+    <Line type="monotone" dataKey="Credit_count" stroke="#82ca9d" />
+    <Line type="monotone" dataKey="Debit_count" stroke="#8884d8" />
+    <Line type="monotone" dataKey="Transfer_count" stroke="#ffc658" />
+    <Line type="monotone" dataKey="Fee_count" stroke="#ff7300" />
+  </LineChart>
+</ResponsiveContainer>
 
-        {/* Lines: count */}
-        {Object.keys(colors).map((type) => (
-          <Line
-            key={`${type}_count`}
-            yAxisId="right"
-            type="monotone"
-            dataKey={`${type}_count`}
-            name={`${type} Count`}
-            stroke={colors[type]}
-            strokeWidth={2}
-            dot={{ r: 4 }}
-          />
-        ))}
-      </ComposedChart>
+
+
 </Col>
              </Row>
-              <Card className="main-card mb-3">
-                <CardHeader className="card-header-tab">
-                  <div className="card-header-title font-size-lg text-capitalize fw-normal">
-                    <i className="header-icon lnr-dice me-3 text-muted opacity-6"> {" "} </i>
-                    Easy Dynamic Tables
-                  </div>
-                  <div className="btn-actions-pane-right actions-icon-btn">
-                    <UncontrolledButtonDropdown>
-                      <DropdownToggle className="btn-icon btn-icon-only" color="link">
-                        <i className="pe-7s-menu btn-icon-wrapper" />
-                      </DropdownToggle>
-                      <DropdownMenu className="dropdown-menu-shadow dropdown-menu-hover-link">
-                        <DropdownItem header>Header</DropdownItem>
-                        <DropdownItem>
-                          <i className="dropdown-icon lnr-inbox"> </i>
-                          <span>Menus</span>
-                        </DropdownItem>
-                        <DropdownItem>
-                          <i className="dropdown-icon lnr-file-empty"> </i>
-                          <span>Settings</span>
-                        </DropdownItem>
-                        <DropdownItem>
-                          <i className="dropdown-icon lnr-book"> </i>
-                          <span>Actions</span>
-                        </DropdownItem>
-                        <DropdownItem divider />
-                        <div className="p-3 text-end">
-                          <Button className="me-2 btn-shadow btn-sm" color="link">
-                            View Details
-                          </Button>
-                          <Button className="me-2 btn-shadow btn-sm" color="primary">
-                            Action
-                          </Button>
-                        </div>
-                      </DropdownMenu>
-                    </UncontrolledButtonDropdown>
-                  </div>
-                </CardHeader>
-                <CardBody>
-                <DataTable 
-                    pagination
-                    fixedHeader
-                    fixedHeaderScrollHeight="400px"
-                  />
-                </CardBody>
-              </Card>
             
-             
+             <Row>
+ <div lg="12" xl="12">
+  <h3>Transaction Details (Tree View)</h3>
+
+  {this.state.datatv ? (
+    <>
+      {this.renderSection(
+        "Top Transactions",
+        this.state.datatv.topTransactions
+      )}
+      {this.renderSection(
+        "Low Transactions",
+        this.state.datatv.lowTransactions
+      )}
+      {this.renderSection(
+        "Recent Transactions",
+        this.state.datatv.recentTransactions
+      )}
+    </>
+  ) : (
+    <div>Loading transaction data...</div>
+  )}
+</div>
+
+
+             </Row>
             </div>
           </CSSTransition>
         </TransitionGroup>

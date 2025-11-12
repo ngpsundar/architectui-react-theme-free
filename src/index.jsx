@@ -18,6 +18,8 @@ import { AuthProvider } from "./Context/AuthContext";
 const store = configureAppStore();
 const rootElement = document.getElementById("root");
 import { KycProvider } from "./Context/KycContext";
+import { NotificationProvider } from "./Context/NotificationContext";
+import { ToastContainer,Slide } from "react-toastify";
 const renderApp = (Component) => (
     <React.StrictMode>
         <Provider store={store}>
@@ -30,8 +32,15 @@ const renderApp = (Component) => (
                 {/* ✅ Wrap your entire app inside ValidationProvider */}
                 <ValidationProvider>
                     <AuthProvider>
-                        <KycProvider> <Component /></KycProvider>
-                        </AuthProvider>
+                        <KycProvider>
+                            <NotificationProvider>
+                                  <ToastContainer
+    position="top-right"
+    autoClose={5000}
+    transition={Slide}
+  />
+                                 <Component /></NotificationProvider></KycProvider>
+                    </AuthProvider>
 
                 </ValidationProvider>
             </HashRouter>
